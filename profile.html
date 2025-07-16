@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>Гамаюн</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="header">
+    <div class="logo">
+        <img src="/static/logo.png" alt="Логотип" style="height:40px;vertical-align:middle;">
+        <span class="site-title">Гамаюн</span>       
+    </div>
+
+    <nav>
+        {{if .User}}
+            <a href="/logout">Выйти</a>
+        {{else}}
+            <a href="/login">Вход</a>
+        {{end}}
+    </nav>
+</header>
+
+<input type="text" id="linkTitle" placeholder="Название ссылки" />
+<input type="url" id="linkUrl" placeholder="URL ссылки" />
+<input type="text" id="linkGroup" placeholder="Группа" />
+<button onclick="addLink()">Добавить</button>
+<button onclick="saveLinks()">Сохранить ссылки в файл</button>
+<input type="file" id="fileInput" accept=".json" onchange="loadLinksFromFile(event)" />
+<button onclick="document.getElementById('fileInput').click()">Загрузить ссылки из файла</button>
+
+<h2>Список ссылок:</h2>
+<div id="linkList"></div>
+
+<script>
+// Функция для загрузки ссылок
+function loadLinks() {
+    document.getElementById('fileInput').style.display = 'none';
+    
+    fetch('/api/notes')
+        .then(response => {
+            if (!response.ok) throw new Error('Ошибка загрузки ссылок');
+            return response.json();
+        })
+        .then(links => {
+            const linkList = document.getElementById('linkList');
+            linkList.innerHTML = '';
+
+            // Проверка на наличие заметок
+            if (!links || links.length === 0) {
+                const noNotesMessage = document.createElement('div');
+                noNotesMessage.className = 'no-notes';
+                noNotesMessage.textContent = 'У вас нет заметок';
+                linkList.appendChild(noNotesMessage);
+                return;
+            }
+
+            // Обработка каждой ссылки
+            links.forEach(link => {
+                let groupDiv = document.getElementById(link.group);
+                if (!groupDiv) {
+                    // Создаем новый элемент группы
+                    groupDiv = document.createElement('div');
+                    groupDiv.id = link.group;
+                    groupDiv.className = 'group';
+
+                    // Создаем заголовок группы
+                    const groupTitle = document.createElement('div');
+                    groupTitle.className = 'group-title';
+                    groupTitle.textContent = link.group;
+
+                    // Добавляем обработчик клика для сворачивания/разворачивания группы
+                    groupTitle.onclick = function() {
+                        const content = groupDiv.querySelector('.group-content');
+                        content.style.display = content.style.display === 'none' ? 'block' : 'none';
+                    };
+
+                    groupDiv.appendChild(groupTitle);
+                    
+                    // Создаем контейнер для ссылок в группе
+                    const groupContent = document.createElement('div');
+                    groupContent.className = 'group-content';
+                    groupDiv.appendChild(groupContent);
+                    
+                    linkList.appendChild(groupDiv);
+                }
+
+                // Создаем элемент ссылки
+                const linkItem = document.createElement('div');
+                linkItem.className = 'link-item';
+
+                const newLink = document.createElement('a');
+                newLink.href = link.url;
+                newLink.textContent = link.title;
+                newLink.target = "_blank";
+
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Удалить';
+                deleteButton.onclick = function() {
+                    fetch('/api/notes/' + link.id, { method: 'DELETE' })
+                        .then(res => {
+                            if (res.ok) {
+                                groupDiv.removeChild(linkItem);
+                                linkItem.remove();
+                                if (groupDiv.childElementCount === 1) {
+                                    linkList.removeChild(groupDiv);
+                                }
+                            } else {
+                                alert('Ошибка удаления');
+                            }
+                        });
+
+                    location.reload();
+                };            
+
+                linkItem.appendChild(newLink);
+                linkItem.appendChild(deleteButton);
+                groupDiv.querySelector('.group-content').appendChild(linkItem); // Добавляем ссылку в контейнер группы
+            });
+        })
+        .catch(err => alert(err.message));
+}
+
+// Функция для добавления ссылки
+function addLink() {
+    const title = document.getElementById('linkTitle').value.trim();
+    const url = document.getElementById('linkUrl').value.trim();
+    const group = document.getElementById('linkGroup').value.trim() || 'Без группы';
+
+    if (title && url) {
+        fetch('/api/notes', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, url, group })
+        }).then(res => {
+            if (res.ok) {
+                loadLinks();
+                document.getElementById('linkTitle').value = '';
+                document.getElementById('linkUrl').value = '';
+                document.getElementById('linkGroup').value = '';
+            } else if (res.status === 401) {
+                alert('Пожалуйста, войдите в систему.');
+                window.location.href = '/login';
+            } else {
+                alert('Ошибка добавления ссылки');
+            }
+        });
+    } else {
+        alert('Пожалуйста, заполните все поля.');
+    }
+}
+
+// Функция для сохранения ссылок в файл
+function saveLinks() {
+    fetch('/api/notes')
+        .then(response => {
+            if (!response.ok) throw new Error('Ошибка загрузки ссылок');
+            return response.json();
+        })
+        .then(links => {
+            const blob = new Blob([JSON.stringify(links, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'links.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        })
+        .catch(err => alert(err.message));
+}
+
+// Функция для загрузки ссылок из файла
+function loadLinksFromFile(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const links = JSON.parse(e.target.result);
+                links.forEach(link => {
+                    // Добавляем каждую ссылку
+                    fetch('/api/notes', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(link)
+                    });
+                });
+                loadLinks(); // Обновляем список после загрузки
+            } catch (error) {
+                alert('Ошибка чтения файла: ' + error.message);
+            }
+        };
+        reader.readAsText(file);
+    }
+}
+
+// Загружаем ссылки при загрузке страницы
+window.onload = loadLinks;
+</script>
+</body>
+</html>

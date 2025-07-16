@@ -1,0 +1,175 @@
+body {
+    font-family: Helvetica, sans-serif;
+    font-size: larger;
+    /*background-image: url('/static/back-photo.jpg');*/
+    background-color: #666;
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: #ffffff;
+    margin: 0;
+    padding: 0;
+}
+
+h2{
+    color: #fff;
+}
+
+.header {    
+    font-style: italic;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #202020;
+    padding: 10px 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    margin: 0;
+}
+
+nav a {
+    color: #ddd;
+    margin-right: 15px;
+    text-decoration: none;
+    transition: color 0.3s;    
+    list-style: none; /*откл. маркеров*/
+}
+
+nav a:hover {
+    color: #fff; 
+}
+
+main {
+    padding: 20px;
+}
+
+button, input[type="submit"] {
+    font-size: medium;
+    background-color: #989898;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+button:hover, input[type="submit"]:hover {
+    background-color: #535353;
+}
+
+form label {
+    display: block;
+    margin-top: 10px;
+}
+
+form input {
+    width: 94%;
+    font-size: large;
+    padding: 8px;
+    margin-top: 5px;
+}
+
+form select {
+    width: 44%;
+    font-size: large;
+    padding: 8px;
+    margin-top: 5px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+   height: 50px;
+   margin-right: 10px;
+}
+
+.site-title {
+    font-size: 34px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.group { 
+    margin-bottom: 1em; 
+    border: 1px solid #ccc;
+    border-radius: 5px; 
+    padding: 0.5em; 
+}
+
+.group-title { 
+    cursor: pointer;
+    font-weight: bold;
+    font-style: italic;
+    padding: 5px;
+    font-weight: bold; 
+    margin-bottom: 0.5em; 
+    font-size: larger;
+}
+
+.group-content {
+    display: none; 
+}
+        
+.link-item { 
+    margin-bottom: 0.3em;     
+    margin-bottom: 0.3em;
+    padding: 10px;
+}
+
+.link-item a {
+    text-decoration: none;
+    margin-right: 10px;
+    color: #fff;
+}
+
+.welcome {
+    text-align: center;
+    margin: 50px 20px;
+}
+
+  .welcome h1 {
+    font-size: 60px;
+    color: #fff;
+}
+
+  .welcome p {
+    font-size: 40px;
+    color: #fff;
+    margin: 10px 0 30px;
+}
+
+.welcome button {
+    width: 30%;
+    font-size: 30px;
+    padding: 20px 15px;
+    border-radius: 15px;
+}
+
+.login-container {
+    width: max-content;
+    color: #fff;
+    border: 1px solid #d9d9d9;
+    border-radius: 5px;
+    padding: 15px;
+}
+
+.login-container button {
+    width: 30%;
+    font-size: 30px;
+    border-radius: 25px;
+}
+
+.login-container h2 {
+    font-size: 40px;
+}
+
+input{
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
