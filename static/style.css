@@ -1,12 +1,17 @@
 body {
     font-family: Helvetica, sans-serif;
     font-size: larger;
-    background-image: url('/static/back-photo.jpg');
+    /*background-image: url('/static/back-photo.jpg');*/
+    background-color: #666;
     background-repeat: no-repeat;
     background-size: cover;
-    color: #fff;
+    color: #ffffff;
     margin: 0;
     padding: 0;
+}
+
+h2{
+    color: #fff;
 }
 
 .header {    
@@ -14,7 +19,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background-color: #535353;
+    background-color: #202020;
     padding: 10px 20px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
@@ -91,25 +96,35 @@ form select {
 
 .group { 
     margin-bottom: 1em; 
-    border: 1px solid #ccc; 
+    border: 1px solid #ccc;
+    border-radius: 5px; 
     padding: 0.5em; 
 }
 
 .group-title { 
+    cursor: pointer;
+    font-weight: bold;
+    font-style: italic;
+    padding: 5px;
     font-weight: bold; 
     margin-bottom: 0.5em; 
+    font-size: larger;
+}
+
+.group-content {
+    display: none; 
 }
         
 .link-item { 
     margin-bottom: 0.3em;     
     margin-bottom: 0.3em;
-    background-color: rgba(255, 255, 255, 0.4);
     padding: 10px;
 }
 
 .link-item a {
     text-decoration: none;
     margin-right: 10px;
+    color: #fff;
 }
 
 .welcome {
