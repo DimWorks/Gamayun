@@ -33,6 +33,7 @@
 <div id="linkList"></div>
 
 <script>
+// Функция для загрузки ссылок
 function loadLinks() {
     document.getElementById('fileInput').style.display = 'none';
     
@@ -54,19 +55,37 @@ function loadLinks() {
                 return;
             }
 
+            // Обработка каждой ссылки
             links.forEach(link => {
                 let groupDiv = document.getElementById(link.group);
                 if (!groupDiv) {
+                    // Создаем новый элемент группы
                     groupDiv = document.createElement('div');
                     groupDiv.id = link.group;
                     groupDiv.className = 'group';
+
+                    // Создаем заголовок группы
                     const groupTitle = document.createElement('div');
                     groupTitle.className = 'group-title';
                     groupTitle.textContent = link.group;
+
+                    // Добавляем обработчик клика для сворачивания/разворачивания группы
+                    groupTitle.onclick = function() {
+                        const content = groupDiv.querySelector('.group-content');
+                        content.style.display = content.style.display === 'none' ? 'block' : 'none';
+                    };
+
                     groupDiv.appendChild(groupTitle);
+                    
+                    // Создаем контейнер для ссылок в группе
+                    const groupContent = document.createElement('div');
+                    groupContent.className = 'group-content';
+                    groupDiv.appendChild(groupContent);
+                    
                     linkList.appendChild(groupDiv);
                 }
 
+                // Создаем элемент ссылки
                 const linkItem = document.createElement('div');
                 linkItem.className = 'link-item';
 
@@ -82,6 +101,7 @@ function loadLinks() {
                         .then(res => {
                             if (res.ok) {
                                 groupDiv.removeChild(linkItem);
+                                linkItem.remove();
                                 if (groupDiv.childElementCount === 1) {
                                     linkList.removeChild(groupDiv);
                                 }
@@ -89,16 +109,19 @@ function loadLinks() {
                                 alert('Ошибка удаления');
                             }
                         });
-                };
+
+                    location.reload();
+                };            
 
                 linkItem.appendChild(newLink);
                 linkItem.appendChild(deleteButton);
-                groupDiv.appendChild(linkItem);
+                groupDiv.querySelector('.group-content').appendChild(linkItem); // Добавляем ссылку в контейнер группы
             });
         })
         .catch(err => alert(err.message));
 }
 
+// Функция для добавления ссылки
 function addLink() {
     const title = document.getElementById('linkTitle').value.trim();
     const url = document.getElementById('linkUrl').value.trim();
@@ -127,6 +150,7 @@ function addLink() {
     }
 }
 
+// Функция для сохранения ссылок в файл
 function saveLinks() {
     fetch('/api/notes')
         .then(response => {
@@ -147,6 +171,7 @@ function saveLinks() {
         .catch(err => alert(err.message));
 }
 
+// Функция для загрузки ссылок из файла
 function loadLinksFromFile(event) {
     const file = event.target.files[0];
     if (file) {
@@ -171,6 +196,7 @@ function loadLinksFromFile(event) {
     }
 }
 
+// Загружаем ссылки при загрузке страницы
 window.onload = loadLinks;
 </script>
 </body>
